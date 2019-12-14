@@ -1,17 +1,8 @@
-# IceBro
+# IceBro preview ![IceBro](images/icebro.png)
 
-## Todo
-* Documentation
-* Fix the full single color char in ext mode in gfx.exe
-* Multicolor sprite view
-* Rework the draw call for code view
-* Rework the draw call for memory view
-* Replace text loading code with struse
-* Vic 20 screen modes
-* Label View
-* Look at possibility of loading vice snapshots link: http://vice-emu.sourceforge.net/vice_9.html
+![IceBro Screenshot](images/screenshot.png)
 
-![IceBro Toolbar](images/toolbar.png)
+The most recent documentation can be found at [github.com/sakrac/icebro](https://github.com/Sakrac/IceBro/blob/master/README.md)
 
 ## What is IceBro
 At the core IceBro consists of a 6502 simulator with a graphical debugger around it.
@@ -32,6 +23,16 @@ This differs from a debugger that is working
 directly with the machine state and
 IceBro is not intended as a replacement for such debuggers.
 
+Currently IceBro runs on 64 bit Windows systems, porting to other systems is possible, see below.
+
+### In progress features
+
+* Vic 20 Screen Modes
+* Load a VICE Snapshot
+* Multicolor Sprite Screen View
+* Label Navigation View
+* Unify the code style and systems so the source can be opened
+
 ### Name
 
 Ice normally stands for an in-circuit emulator, or replacement
@@ -48,8 +49,35 @@ ImGui Theme created by [MonstersGoBoom](https://twitter.com/MonstersGo).
 
 ---
 
+VICE - the Versatile Commodore Emulator [vice-emu.sourceforge.net](http://vice-emu.sourceforge.net/)
+
 VICE is a program that runs on a Unix, MS-DOS, Win32, OS/2, BeOS, QNX 4.x,
 QNX 6.x, Amiga, Syllable or Mac OS X machine and executes programs intended for the old 8-bit computers. The current version emulates the C64, the C64DTV, the C128, the VIC20, practically all PET models, the PLUS4 and the CBM-II (aka C610/C510). An extra emulator is provided for C64 expanded with the CMD SuperCPU.
+
+---
+
+GLFW 3.2 - www.glfw.org
+
+A library for OpenGL, window and input
+
+Copyright (c) 2002-2006 Marcus Geelnard
+
+Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+
+This software is provided 'as-is', without any express or implied
+warranty. In no event will the authors be held liable for any damages
+arising from the use of this software.
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would
+   be appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not
+   be misrepresented as being the original software.
+3. This notice may not be removed or altered from any source
+   distribution.
 
 ---
 
@@ -81,6 +109,7 @@ include this font(without any modification or file renaming) as part of a softwa
 * Vice Console with extra commands to control the connection
 * Visualize graphics in memory in a variety of ways
 
+![IceBro Toolbar](images/toolbar.png)
 
 # Getting Started
 
@@ -96,7 +125,7 @@ dumb it down.
 so click **OK** to load it in.
 * The debugger will identify that it is a basic program with a **SYS** command
 and set the initial PC accordingly (if loading a **PRG** file to another memory location it will assume the load address is the start address).
-* At this point you can step through the program with F10 (Step Over), F11 (Step Into) or just hit F5 to run it. Press the Pause Icon in the Toolbar to stop running.
+* At this point you can step through the program with F10 (Step Over), F11 (Step Into) or just hit F5 to run it. Press the Pause Icon in the Toolbar to pause VICE.
 * To check out source level debugging you can click **FILE** / **LOAD LISTING** from the drop down menu of the tool, select **Example/IceBro.lst** then in a code view enable the **SOURCE** checkbox.
 
 ### Running with VICE
@@ -127,14 +156,14 @@ and set the initial PC accordingly (if loading a **PRG** file to another memory 
 
 # Views
 
-To show closed views go to the **Windows** context menu and select a view to open.
+To show closed views go to the **Windows** main menu bar and select a view to open. Already opened views are marked with a checkmark.
 
 ### Vice Console
 
 The Console combines the VICE Monitor with a few commands that are specific to IceBro. The VICE commands can be reviewed by typing help while the IceBro commands include:
 
 * connect/cnct <ip>:<port> - connect to a remote host, default to 127.0.0.1:6510
-* stop - stop VICE (same as pause icon in toolbar)
+* pause - pause VICE (same as pause icon in toolbar)
 * font <size> - set font size 0-4
 * sync - redo copy machine state from VICE (stepping in VICE doesn't sync for each command, also useful to restore the debugger to the current VICE state)
 * eval <exp> - evaluate an expression
@@ -170,6 +199,50 @@ as many bytes as fits in the view. The address field can be a value or an expres
 
     =$101+s
 
+### Breakpoints
+
+Currently there is no user interaction in the breakpoint window, use F9 in the Code View or break / watch in the Console View. The breakpoint view doesn't currently show traces, and the trace printing in the console is in progress at the moment. It works but will occasionally pause VICE, and it fills up the console really fast. If the console gets a bit unresponsive you can just clear it.
+
+
+### Screen View
+
+This is a view with a ton of options and one that I keep adding more and more options to but don't worry, it should be simple to set it up. You have up to four screens that can each show different things.
+
+The Screen View has an option for different computers, for debugging C64 you probably want that option.
+
+The easiest mode to use is C64/Current, it looks at memory in $d000 to draw what is the current screen with sprites. It is also fairly useless because hopefully it is what you seen in VICE (it only draws the sprites as of right now, no raster split sprites etc.). Make sure to set columns to 40 and rows to 25 to render correctly.
+
+You can manually set screen modes and screen sizes as well, including Text,ExtText (ECM) and Bitmap. The Sprite view will show sprites in memory that fits into a screen with the dimensions of 8 pixel columns and rows. Sprite multicolor is in progress.
+
+The Zoom feature allows you to customize how large the screen is drawn within the window.
+
+### Watch View
+
+The watch view is straightforward, click on a line on the left side and enter an expression. If an expression is prefixed with '*' it will show bytes at the address of the result of the expression.
+
+If a part of an expression is enclosed in brackets ('[', ']') it will take the byte at the address within, and braces ('{', '}') will take a word (16 bit value) from an address.
+
+For example, to see the bytes $fe/$ff points to:
+
+    *{$fe}
+
+To see what instruction is at an address use dis, this shows the first instruction of the current interrupt:
+
+    dis {$fffe}
+
+Or to see the current stack
+
+    *$101+s
+
+I'm still thinking about ways to rearrange expressions in the watch window but so far the easiest thing is to just edit IceBro.cfg while IceBro is closed.
+
+### Register View
+
+The Register View is trivial, you can click on any number in this view and change it. If you're connected to VICE you will see a VICE icon that is either crossed out or as it is. This lets you know if the values you edit in the registers will be updated in VICE as well. You can click the icon to switch this.
+
+The reason for the icon is that if you're debugging something in the sandbox it is convenient to change flags and numbers to try things, but if the registers are not relevant to the current state in VICE you can mess up your code. Reflecting registers in VICE is automatically enabled after syncing with VICE and disabled when stepping or running in the sandbox.
+
+
 # Expressions
 
 Expressions are normal math expressions accepting labels and registers as values. The expressions are used
@@ -186,3 +259,16 @@ Registers include:
 
 * PC, A, X, Y, S (stack), C, Z, I, D, V, N, FL (all flags as a byte)
 
+Expresions are used for Screen, Mem, Watch, Code Views and the Eval command in the Console.
+
+# Bugs, Requests, Suggestions and Comments
+
+Please use the features at [github.com/sakrac/icebro](https://github.com/sakrac/icebro) to communicate your feedback. I will probably check on csdb.dk and twitter occasionally but it is easier to keep track of things in one place!
+
+### Pull Requests
+
+Once the project source is released I'm happy for any help, but please discuss any solution to fixing an issue you're considering with me first, just so I can coordinate and avoid duplicated solutions which I'm just now about to address myself after working on this codebase for a very long time...
+
+### Other platforms
+
+Dear ImGui and GLFW are built for supporting linux and apple but there are various systems I've implemented such as file dialogs, socks, threads and mutexes that will need some customization. Once the source is released and reasonably cleaned up I'd be happy for any help to add support for other platforms.

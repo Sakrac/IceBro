@@ -189,9 +189,9 @@ $0922 8d 1c d0    sta $d01c      4          sta $d01c
 $0925 60          rts            6          rts
       c<1 = 190 + 11                    }
                                         SpriteX:
-$0926 ac 00                                 dc.w 160+24-12
+$0926 c4 00                                 dc.w $c4
                                         SpriteY:
-$0928 8c                                    dc.b 50+100-10
+$0928 9d                                    dc.b $9d
                                         BitSet:
                                           rept 8 { dc.b 1<<rept }
 $0929 01                                 dc.b 1<<rept }
