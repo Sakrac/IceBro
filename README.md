@@ -1,4 +1,4 @@
-# IceBro preview ![IceBro](images/icebro.png)
+# IceBro preview ![IceBro](images/IceBro.png)
 
 ![IceBro Screenshot](images/screenshot.png)
 
