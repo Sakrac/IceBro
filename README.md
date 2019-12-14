@@ -2,8 +2,8 @@
 
 ## Todo
 * Documentation
-* Debuggable Example
-* C64 Current Mode with Sprites
+* Fix the full single color char in ext mode in gfx.exe
+* Multicolor sprite view
 * Rework the draw call for code view
 * Rework the draw call for memory view
 * Replace text loading code with struse
@@ -42,7 +42,9 @@ but it is a cool concept. Bro relates to the connection to VICE.
 
 ---
 
-This tool is built using the Docking Branch of Dear ImGui (https://github.com/ocornut/imgui)
+This tool is built using the Docking Branch of [Dear ImGui](https://github.com/ocornut/imgui) created by [Omar Cornut](https://twitter.com/ocornut).
+
+ImGui Theme created by [MonstersGoBoom](https://twitter.com/MonstersGo).
 
 ---
 
@@ -121,3 +123,66 @@ and set the initial PC accordingly (if loading a **PRG** file to another memory 
 * Shift+F11 Step back
 * Page up/down - Move several lines up/down in current code / memory window
 * Cursor up/down - Move code cursor up/down in current code window
+
+
+# Views
+
+To show closed views go to the **Windows** context menu and select a view to open.
+
+### Vice Console
+
+The Console combines the VICE Monitor with a few commands that are specific to IceBro. The VICE commands can be reviewed by typing help while the IceBro commands include:
+
+* connect/cnct <ip>:<port> - connect to a remote host, default to 127.0.0.1:6510
+* stop - stop VICE (same as pause icon in toolbar)
+* font <size> - set font size 0-4
+* sync - redo copy machine state from VICE (stepping in VICE doesn't sync for each command, also useful to restore the debugger to the current VICE state)
+* eval <exp> - evaluate an expression
+* history/hist - show previous commands
+* clear - clear the console
+
+### Code
+
+There are four code views that can be displayed at any time. You can enter a value or an expression in the
+address field. If you preface the expression with '=' the expression will be continously evaluated so for
+example to show the call origin:
+
+    ={$101+s}-2
+
+Or the current interrupt:
+
+    ={$fffe}
+
+The checkboxes enables information in the code view, such as the address, bytes of the instructions etc.
+
+* address - Show the address of each line
+* bytes - Show the bytes of instructions
+* refs - Show what the instruction refers to and the value it contains if relevant
+* labels - Shows known labels, disable to see addresses
+* source - If a valid listing is loaded show that for each represented line
+
+The current PC is indicated by a '>', breakpoints are red broken circles in the leftmost column.
+
+### Mem
+
+Memory views shows bytes in RAM. You can specify the number of bytes in each line or clear it to show
+as many bytes as fits in the view. The address field can be a value or an expression. Just like the code view an '=' prefixing the expression evaluates the expression constantly. For example to see the current stack:
+
+    =$101+s
+
+# Expressions
+
+Expressions are normal math expressions accepting labels and registers as values. The expressions are used
+in various views including the Watch View, Mem and Code Views and also by the eval command in the Console view.
+Valid operators include:
+
+* Conditionals (eval to 0 or 1): ==, <, >, <=, >=, &&, ||
+* Math: +, -, *, /
+* Logical: &, |, ^ (xor), !
+* Lookup bytes from memory: [addr] (byte), {addr} (word)
+* Parenthesis: (, ) (controlling order of operations)
+
+Registers include:
+
+* PC, A, X, Y, S (stack), C, Z, I, D, V, N, FL (all flags as a byte)
+
