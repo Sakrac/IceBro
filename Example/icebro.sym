@@ -1,0 +1,31 @@
+
+.label ColorRAM = $d800
+.label VIC = $4000
+.label Font = $4000
+.label Screen = $4400
+.label Sprite = $4800
+.label debugbreak = $0854
+.label CopyScreen = $0866
+.label CopyColors = $088a {
+.label .zpDst = $00f6
+.label .nchk = $08b1
+}
+.label PlaceSprite = $08ba {
+.label .zpAnim = $00f6
+.label .zpPass = $00f5
+.label .zpHiX = $00f4
+.label .zpSprIndex = $00f3
+.label .zpCnt = $00f2
+}
+.label SpriteX = $0926
+.label SpriteY = $0928
+.label BitSet = $0929
+.label IceBroSpriteSetup = $0931
+.label IceBroSprite = $093c
+.label IceBroSpriteSize = $0080
+.label IceBroMapColor = $09bc
+.label IceBroMapScreen = $0bb0
+.label IceBroMapFont = $0f98
+.label IceBroMapFontSize = $01f8
+.label CopyFont = $1190
+.label CopySprite = $11b4

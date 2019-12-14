@@ -1,0 +1,281 @@
+Section default $0801 - $11c0 ($09bf)
+Section default (0, CODE): $0801-$11c0
+src\icebro.s(0):
+                                        pool zpGlobal $40-$f8
+                                        zpGlobal pool zpLocal 16
+                                        const ColorRAM = $d800
+                                        const VIC = $4000
+                                        const Font = VIC
+                                        const Screen = VIC + $400
+                                        const Sprite = VIC + $800
+                                        macro CopyOnce( src, dst, size )
+src\icebro.s(48):
+$0000                                   org $801
+$0801 0b 08 01 00 9e 32 30 36           dc.b $0b, $08, $01, $00, $9e, $32, $30, $36, $34, $00, $00, $00, $00, $00, $00
+      c>1                               {
+$0810 78          sei            2        sei
+$0811 a9 10       lda #$10       2          lda #((Screen>>6)&$f0) | ((Font>>10)&$0e)
+$0813 8d 18 d0    sta $d018      4        sta $d018
+$0816 ad 00 dd    lda $dd00      4        lda $dd00  ; vic bank = $4000
+$0819 29 fc       and #$fc       2        and #$fc
+$081b 09 02       ora #$02       2        ora #2
+$081d 8d 00 dd    sta $dd00      4        sta $dd00
+$0820 a9 5b       lda #$5b       2        lda #$5b
+$0822 8d 11 d0    sta $d011      4        sta $d011
+$0825 a9 c8       lda #$c8       2          lda #$c8
+$0827 8d 16 d0    sta $d016      4          sta $d016
+$082a a9 00       lda #$00       2          lda #0
+$082c 8d 20 d0    sta $d020      4          sta $d020
+$082f 8d 21 d0    sta $d021      4          sta $d021
+$0832 8d 17 d0    sta $d017      4          sta $d017
+$0835 8d 1b d0    sta $d01b      4          sta $d01b
+$0838 8d 1d d0    sta $d01d      4          sta $d01d
+$083b a9 03       lda #$03       2          lda #3
+$083d 8d 22 d0    sta $d022      4          sta $d022
+$0840 a9 09       lda #$09       2          lda #9
+$0842 8d 23 d0    sta $d023      4          sta $d023
+$0845 a9 0b       lda #$0b       2          lda #11
+$0847 8d 24 d0    sta $d024      4          sta $d024
+$084a a9 01       lda #$01       2          lda #1
+$084c 8d 25 d0    sta $d025      4          sta $d025
+$084f a9 06       lda #$06       2          lda #6
+$0851 8d 26 d0    sta $d026      4          sta $d026
+                                            debugbreak
+$0854 20 ba 08    jsr $08ba      6          jsr PlaceSprite
+$0857 20 b4 11    jsr $11b4      6          jsr CopySprite
+$085a 20 90 11    jsr $1190      6          jsr CopyFont
+$085d 20 66 08    jsr $0866      6          jsr CopyScreen
+$0860 20 8a 08    jsr $088a      6          jsr CopyColors
+$0863 4c 63 08    jmp $0863      3          jmp *
+      c<1 = 117 + 0                     }
+                                        CopyScreen:
+src\icebro.s(1):
+      c>1                               {
+                                          if (1000) & $ff00
+$0866 a2 03       ldx #$03       2          ldx #>(1000)
+$0868 a0 00       ldy #$00       2          ldy #0
+      c>2                                   {
+$086a b9 b0 0b    lda $0bb0,y    4+           lda IceBroMapScreen,y
+$086d 99 00 44    sta $4400,y    5            sta Screen,y
+$0870 c8          iny            2            iny
+$0871 d0 f7       bne $086a      2+           bne !
+$0873 ee 6c 08    inc $086c      6            inc !+2
+$0876 ee 6f 08    inc $086f      6            inc !+5
+$0879 ca          dex            2            dex
+$087a d0 ee       bne $086a      2+           bne !
+      c<2 = 29 + 3                          }
+                                          endif
+                                          if (1000) & $ff
+                                            if ( (1000) & $ff) <= $80
+src\icebro.s(25):
+                                            else
+$087c a2 00       ldx #$00       2            ldx #0
+      c>2                                     {
+$087e bd b0 0e    lda $0eb0,x    4+             lda IceBroMapScreen+((1000)&$ff00),x
+$0881 9d 00 47    sta $4700,x    5              sta Screen+((1000)&$ff00),x
+$0884 e8          inx            2              inx
+$0885 e0 e8       cpx #$e8       2              cpx #<(1000)
+$0887 d0 f5       bne $087e      2+             bne !
+      c<2 = 15 + 2                            }
+                                            endif
+                                          endif
+      c<1 = 50 + 5                      }
+src\icebro.s(92):
+$0889 60          rts            6          rts
+                                        CopyColors:
+      c>1                               {
+                                            zpLocal .zpDst.w
+$088a a9 00       lda #$00       2          lda #<ColorRAM
+$088c 85 f6       sta $f6        3          sta .zpDst
+$088e a9 d8       lda #$d8       2          lda #>ColorRAM
+$0890 85 f7       sta $f7        3          sta .zpDst+1
+$0892 a2 00       ldx #$00       2          ldx #0
+$0894 a0 00       ldy #$00       2          ldy #0
+      c>2                                   {
+$0896 bd bc 09    lda $09bc,x    4+             lda IceBroMapColor,x
+$0899 91 f6       sta ($f6),y    6              sta (.zpDst),y
+$089b c8          iny            2              iny
+$089c 4a          lsr            2              lsr
+$089d 4a          lsr            2              lsr
+$089e 4a          lsr            2              lsr
+$089f 4a          lsr            2              lsr
+$08a0 91 f6       sta ($f6),y    6              sta (.zpDst),y
+$08a2 c8          iny            2              iny
+      c>3                                       {
+$08a3 d0 02       bne $08a7      2+                 bne %
+$08a5 e6 f7       inc $f7        5                  inc .zpDst+1
+      c<3 = 7 + 1                               }
+$08a7 c0 e8       cpy #$e8       2              cpy #<(25*40)
+$08a9 d0 06       bne $08b1      2+             bne .nchk
+$08ab a5 f7       lda $f7        3              lda .zpDst+1
+$08ad c9 db       cmp #$db       2              cmp #$db
+$08af f0 08       beq $08b9      2+             beq %
+$08b1 e8          inx            2      .nchk inx
+$08b2 d0 e2       bne $0896      2+             bne !
+$08b4 ee 98 08    inc $0898      6              inc !+2
+$08b7 d0 dd       bne $0896      2+             bne !
+      c<2 = 58 + 6                          }
+$08b9 60          rts            6          rts
+      c<1 = 78 + 6                      }
+                                        PlaceSprite:
+      c>1                               {
+src\icebro.s(138):
+$08ba a9 31       lda #$31       2          lda #<IceBroSpriteSetup
+$08bc 85 f6       sta $f6        3          sta .zpAnim
+$08be a9 09       lda #$09       2          lda #>IceBroSpriteSetup
+$08c0 85 f7       sta $f7        3          sta .zpAnim+1
+$08c2 a9 00       lda #$00       2          lda #0
+$08c4 85 f4       sta $f4        3          sta .zpHiX
+$08c6 aa          tax            2          tax
+$08c7 a8          tay            2          tay
+$08c8 b1 f6       lda ($f6),y    5+         lda (.zpAnim),y
+$08ca 85 f3       sta $f3        3          sta .zpSprIndex
+$08cc c8          iny            2          iny
+$08cd 84 f5       sty $f5        3          sty .zpPass
+      c>2                                   {
+                                                zpLocal .zpCnt
+$08cf b1 f6       lda ($f6),y    5+             lda (.zpAnim),y ; hires sprite count
+$08d1 85 f2       sta $f2        3              sta .zpCnt
+$08d3 c8          iny            2              iny
+      c>3                                       {
+$08d4 8a          txa            2                  txa
+$08d5 0a          asl            2                  asl
+$08d6 aa          tax            2                  tax
+$08d7 18          clc            2                  clc
+$08d8 ad 26 09    lda $0926      4                  lda SpriteX
+$08db 71 f6       adc ($f6),y    5+                 adc (.zpAnim),y
+$08dd c8          iny            2                  iny
+$08de 9d 00 d0    sta $d000,x    5                  sta $d000,x
+$08e1 ad 27 09    lda $0927      4                  lda SpriteX+1
+$08e4 69 00       adc #$00       2                  adc #0
+$08e6 4a          lsr            2                  lsr
+$08e7 08          php            3                  php
+$08e8 18          clc            2                  clc
+$08e9 ad 28 09    lda $0928      4                  lda SpriteY
+$08ec 71 f6       adc ($f6),y    5+                 adc (.zpAnim),y
+$08ee c8          iny            2                  iny
+$08ef 9d 01 d0    sta $d001,x    5                  sta $d001,x
+$08f2 8a          txa            2                  txa
+$08f3 4a          lsr            2                  lsr
+$08f4 aa          tax            2                  tax
+      c>4                                           {
+$08f5 28          plp            4                      plp
+$08f6 90 07       bcc $08ff      2+                     bcc %
+$08f8 a5 f4       lda $f4        3                      lda .zpHiX
+$08fa 1d 29 09    ora $0929,x    4+                     ora BitSet,x
+$08fd 85 f4       sta $f4        3                      sta .zpHiX
+      c<4 = 16 + 2                                  }
+$08ff b1 f6       lda ($f6),y    5+                 lda (.zpAnim),y
+$0901 c8          iny            2                  iny
+$0902 9d 27 d0    sta $d027,x    5                  sta $d027,x
+$0905 8a          txa            2                  txa
+$0906 18          clc            2                  clc
+$0907 65 f3       adc $f3        3                  adc .zpSprIndex
+$0909 9d f8 47    sta $47f8,x    5                  sta Screen+$3f8,x
+$090c e8          inx            2                  inx
+$090d c6 f2       dec $f2        5                  dec .zpCnt
+$090f d0 c3       bne $08d4      2+                 bne !
+      c<3 = 108 + 6                             }
+$0911 c6 f5       dec $f5        5              dec .zpPass
+$0913 10 ba       bpl $08cf      2+             bpl !
+      c<2 = 125 + 8                         }
+$0915 a5 f4       lda $f4        3          lda .zpHiX
+$0917 8d 10 d0    sta $d010      4          sta $d010
+$091a b1 f6       lda ($f6),y    5+         lda (.zpAnim),y
+$091c c8          iny            2          iny
+$091d 8d 15 d0    sta $d015      4          sta $d015
+$0920 b1 f6       lda ($f6),y    5+         lda (.zpAnim),y
+$0922 8d 1c d0    sta $d01c      4          sta $d01c
+$0925 60          rts            6          rts
+      c<1 = 190 + 11                    }
+                                        SpriteX:
+$0926 ac 00                                 dc.w 160+24-12
+                                        SpriteY:
+$0928 8c                                    dc.b 50+100-10
+                                        BitSet:
+                                          rept 8 { dc.b 1<<rept }
+$0929 01                                 dc.b 1<<rept }
+$092a 02                                 dc.b 1<<rept }
+$092b 04                                 dc.b 1<<rept }
+$092c 08                                 dc.b 1<<rept }
+$092d 10                                 dc.b 1<<rept }
+$092e 20                                 dc.b 1<<rept }
+$092f 40                                 dc.b 1<<rept }
+$0930 80                                 dc.b 1<<rept }
+                                        IceBroSpriteSetup:
+$0931 20                                    dc.b Sprite>>6
+../bin/icebro_sprite.s(5):
+                                        
+../bin/icebro_sprite.s(0):
+$0932 01                                  dc.b 1  ;single color sprite count
+$0933 00 00 00                            dc.b 0, 0, 0  ; offs x, y and sprite color
+$0936 01                                  dc.b 1  ;multicolor sprite count
+$0937 00 02 03                            dc.b 0, 2, 3  ; offs x, y and sprite color
+$093a 03 02                               dc.b $03, $02 ; sprite enable mask and multicolor mask
+src\icebro.s(218):
+                                        IceBroSprite:
+$093c 00 3c 00 07 c3 00 18 30               incbin "../bin/icebro_sprite.bin"
+                                        const IceBroSpriteSize = * - IceBroSprite
+                                        IceBroMapColor:
+$09bc ee 7f 77 77 f7 55 ff 77               incbin "../bin/icebro_map_ecm.col"
+                                        IceBroMapScreen:
+$0bb0 01 02 00 01 03 04 05 03               incbin "../bin/icebro_map_ecm.scr"
+                                        IceBroMapFont:
+$0f98 00 00 00 00 00 00 00 00               incbin "../bin/icebro_map_ecm.chr"
+                                        const IceBroMapFontSize = * - IceBroMapFont
+                                        CopyFont:
+src\icebro.s(1):
+      c>1                               {
+                                          if (IceBroMapFontSize) & $ff00
+$1190 a2 01       ldx #$01       2          ldx #>(IceBroMapFontSize)
+$1192 a0 00       ldy #$00       2          ldy #0
+      c>2                                   {
+$1194 b9 98 0f    lda $0f98,y    4+           lda IceBroMapFont,y
+$1197 99 00 40    sta $4000,y    5            sta Font,y
+$119a c8          iny            2            iny
+$119b d0 f7       bne $1194      2+           bne !
+$119d ee 96 11    inc $1196      6            inc !+2
+$11a0 ee 99 11    inc $1199      6            inc !+5
+$11a3 ca          dex            2            dex
+$11a4 d0 ee       bne $1194      2+           bne !
+      c<2 = 29 + 3                          }
+                                          endif
+                                          if (IceBroMapFontSize) & $ff
+                                            if ( (IceBroMapFontSize) & $ff) <= $80
+src\icebro.s(25):
+                                            else
+$11a6 a2 00       ldx #$00       2            ldx #0
+      c>2                                     {
+$11a8 bd 98 10    lda $1098,x    4+             lda IceBroMapFont+((IceBroMapFontSize)&$ff00),x
+$11ab 9d 00 41    sta $4100,x    5              sta Font+((IceBroMapFontSize)&$ff00),x
+$11ae e8          inx            2              inx
+$11af e0 f8       cpx #$f8       2              cpx #<(IceBroMapFontSize)
+$11b1 d0 f5       bne $11a8      2+             bne !
+      c<2 = 15 + 2                            }
+                                            endif
+                                          endif
+      c<1 = 50 + 5                      }
+src\icebro.s(231):
+$11b3 60          rts            6          rts
+                                        CopySprite:
+src\icebro.s(1):
+      c>1                               {
+                                          if (IceBroSpriteSize) & $ff00
+src\icebro.s(15):
+                                          endif
+                                          if (IceBroSpriteSize) & $ff
+                                            if ( (IceBroSpriteSize) & $ff) <= $80
+$11b4 a2 7f       ldx #$7f       2            ldx #(<(IceBroSpriteSize))-1
+      c>2                                     {
+$11b6 bd 3c 09    lda $093c,x    4+             lda IceBroSprite+((IceBroSpriteSize)&$ff00),x
+$11b9 9d 00 48    sta $4800,x    5              sta Sprite+((IceBroSpriteSize)&$ff00),x
+$11bc ca          dex            2              dex
+$11bd 10 f7       bpl $11b6      2+             bpl !
+      c<2 = 13 + 2                            }
+                                            else
+src\icebro.s(34):
+                                            endif
+                                          endif
+      c<1 = 15 + 2                      }
+src\icebro.s(235):
+$11bf 60          rts            6          rts
