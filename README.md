@@ -4,6 +4,9 @@
 
 The most recent documentation can be found at [github.com/sakrac/icebro](https://github.com/Sakrac/IceBro/blob/master/README.md)
 
+# Updates
+* Embedded icons and config files in the executable so it works even if no other files than the executable was copied.
+
 ## What is IceBro
 At the core IceBro consists of a 6502 simulator with a graphical debugger around it.
 Programs can be loaded into the simulator memory and executed but no other hardware
