@@ -5,6 +5,8 @@
 The most recent documentation can be found at [github.com/sakrac/icebro](https://github.com/Sakrac/IceBro/blob/master/README.md)
 
 # Updates
+* Default to **C64** system and **Current** mode in graphics view
+* Go/Reverse/Step/BackStep icons work!
 * Embedded icons and config files in the executable so it works even if no other files than the executable was copied.
 
 ## What is IceBro
