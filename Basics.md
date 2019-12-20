@@ -2,14 +2,7 @@
 
 ### Download and Run
 
-The simplest way to download a folder from GitHub is dowload as zip by first clicking on the green Clone or Download button. You can download
-just IceBro.exe, all the necessary files are embedded, but to get the example and documentation you might want the entire folder.
-
-![IceBro Download](Basics/download.png)
-
-Just extract the files into a convenient folder
-
-![IceBro Files](Basics/folder.png)
+You only need IceBro.exe to run the debugger, to follow the tutorial you can also grab the Examples folder.
 
 Just click IceBro.exe to begin, it should look like this the first time
 
@@ -17,7 +10,7 @@ Just click IceBro.exe to begin, it should look like this the first time
 
 ### Using IceBro without connecting to VICE
 
-To try the example without VICE just click the LOAD icon to bring up the file dialog
+To try the example without VICE just download the Example folder from the IceBro github repo and click the LOAD icon to bring up the file dialog
 
 ![IceBro Load](Basics/load.png)
 
