@@ -5,8 +5,10 @@
 The most recent documentation can be found at [github.com/sakrac/icebro](https://github.com/Sakrac/IceBro/blob/master/README.md)
 
 # Updates
-* Kick Assembler Source Level Debugging, also showing source saves in the layout data.
-* Load .sym files and parse vice moncommand files for labels
+* Time View, scrub cpu history back and forth on a slider. Open the Time View from the **Windows** main menu bar.
+* Unloading source when loading another source!
+* Kick Assembler Source Level Debugging, also showing source saves in the layout data. Open from the **File** main menu bar.
+* Load .sym files and parse vice moncommand files for labels, also fromm the **File** main menu bar
 * Various fixes
 * Default to **C64** system and **Current** mode in graphics view
 * Go/Reverse/Step/BackStep icons work!
