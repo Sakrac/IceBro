@@ -19,13 +19,15 @@ At the core IceBro consists of a 6502 simulator with a graphical debugger around
 Programs can be loaded into the simulator memory and executed but no other hardware
 is simulated within the debugger.
 
+![IceBro Flow](images/flow.png)
+
 To work with VICE the debugger can connect to a running
 instance of VICE (C64 or Vic20) and copy the machine state
 (RAM, CPU registers, labels and breakpoints)
 when its monitor mode is enabled.
 
 This means that the debugger is primarily looking at
-the copy of the machine state,
+the **copy** of the machine state,
 and most debugging happens in the copied state.
 The vice console commands still works with the VICE machine state.
 
@@ -33,7 +35,22 @@ This differs from a debugger that is working
 directly with the machine state and
 IceBro is not intended as a replacement for such debuggers.
 
+The CPU history in IceBro begins when VICE pauses, anything that happened before
+that point is unknown.
+
+Return to VICE by entering **X** in the Vice Console, just like you would
+in the built-in monitor. This starts VICE at the point where it was paused
+with changes applied from changing code or memory, but none of the machine
+state altered as part of debugging in the sandbox.
+
+Since VICE locks while connected to a remote monitor I recommend
+exiting VICE by typing **QUIT** into the Vice Console rather than force
+quitting. If VICE is connected to IceBro but not paused there is no problem
+just closing VICE.
+
 Currently IceBro runs on 64 bit Windows systems, porting to other systems is possible, see below.
+
+Video showing IceBro usage: https://youtu.be/YLgo5iEJfb8
 
 ### In progress features
 
