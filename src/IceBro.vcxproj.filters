@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{af11470e-fef5-4aa0-a83b-4a7c99c4365e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Views">
+      <UniqueIdentifier>{f06849d1-ddd1-4dbc-92f5-17085e8b57af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{35cbf0f9-d6db-42cc-a7e2-93dc1fa37e4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="struse">
+      <UniqueIdentifier>{95121525-13d5-4692-9f85-18eb347dd18f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Expressions.h" />
+    <ClInclude Include="Sym.h" />
+    <ClInclude Include="machine.h" />
+    <ClInclude Include="boot_ram.h" />
+    <ClInclude Include="cpu.h" />
+    <ClInclude Include="ViceConnect.h" />
+    <ClInclude Include="C64Colors.h" />
+    <ClInclude Include="Breakpoints.h" />
+    <ClInclude Include="imgui\examples\imgui_impl_opengl2.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\examples\imgui_impl_glfw.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="CodeControl.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="BreakView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="GfxView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="MemView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="RegView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolBar.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="Views.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="ViceView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="WatchView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDialog.h" />
+    <ClInclude Include="HashTable.h" />
+    <ClInclude Include="ImGui_Helper.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="Listing.h" />
+    <ClInclude Include="Data\C64_Pro_Mono-STYLE.ttf.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="struse\struse.h">
+      <Filter>struse</Filter>
+    </ClInclude>
+    <ClInclude Include="struse\xml.h">
+      <Filter>struse</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceDebug.h" />
+    <ClInclude Include="TimeView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="platform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="C64Colors.cpp" />
+    <ClCompile Include="struse.cpp" />
+    <ClCompile Include="ViceConnect.cpp" />
+    <ClCompile Include="Expressions.cpp" />
+    <ClCompile Include="sym.cpp" />
+    <ClCompile Include="machine.cpp" />
+    <ClCompile Include="boot_ram.cpp" />
+    <ClCompile Include="cpu.cpp" />
+    <ClCompile Include="SourceDebug.cpp" />
+    <ClCompile Include="Breakpoints.cpp" />
+    <ClCompile Include="imgui\examples\imgui_impl_glfw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\examples\imgui_impl_opengl2.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="CodeControl.cpp" />
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="BreakView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="GfxView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="MemView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="RegView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolBar.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="Views.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="ViceView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="WatchView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDialog.cpp" />
+    <ClCompile Include="ImGui_Helper.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="Listing.cpp" />
+    <ClCompile Include="Data\C64_Pro_Mono-STYLE.ttf.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="IceBro.cpp" />
+    <ClCompile Include="Icons.cpp" />
+    <ClCompile Include="struse\xml.cpp">
+      <Filter>struse</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="IceBro.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="IceBro.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="imgui\misc\natvis\imgui.natvis">
+      <Filter>imgui</Filter>
+    </Natvis>
+    <Natvis Include="struse\struse.natvis">
+      <Filter>struse</Filter>
+    </Natvis>
+  </ItemGroup>
+</Project>

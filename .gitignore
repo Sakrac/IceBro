@@ -3,6 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+src/x64
+src/x86
+imgui.ini
+IceBro.cfg
+src/imgui.ini
+src/IceBro.cfg
+
+
 # User-specific files
 *.rsuser
 *.suo
