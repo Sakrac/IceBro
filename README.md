@@ -1,10 +1,11 @@
-# IceBro preview ![IceBro](images/IceBro.png)
+# IceBro ![IceBro](images/IceBro.png)
 
 ![IceBro Screenshot](images/screenshot.png)
 
 The most recent documentation can be found at [github.com/sakrac/icebro](https://github.com/Sakrac/IceBro/blob/master/README.md)
 
 # Updates
+* Source code added - solution file for Visual Studio 2017 included, to compile for other platforms search for _WIN32 and configure GLFW and ImGui for the target platforms. The code relies on the ImGui-Docking branch.
 * Time View, scrub cpu history back and forth on a slider. Open the Time View from the **Windows** main menu bar.
 * Unloading source when loading another source!
 * Kick Assembler Source Level Debugging, also showing source saves in the layout data. Open from the **File** main menu bar.
