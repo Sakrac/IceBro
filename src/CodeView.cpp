@@ -231,7 +231,7 @@ void CodeView::Draw(int index)
 			line.add_len(chars);
 			if (showRefs) {
 				char buf[24];
-				if (InstrRef(read, buf, sizeof(buf))) { line.pad_to(' ', (showAddress ? 6 : 0) + (showBytes ? 9 : 0) + 16).append(buf); }
+				if (InstrRef(read, buf, sizeof(buf))) { line.pad_to(' ', (showAddress ? 6 : 0) + (showBytes ? 9 : 0) + (showLabels ? 6 : 0 ) + 10).append(buf); }
 			}
 			if (goToPC && read==pc) { goToPC = false; } // don't recenter PC if already in view
 			if (setPCAtCursor && read==addrCursor) {
@@ -282,7 +282,7 @@ void CodeView::Draw(int index)
 				if (!srcLine) { srcLine = GetListing(read, nullptr, nullptr); }
 				if (srcLine) {
 					ImGui::SameLine();
-					strl_t col = (showAddress ? 6 : 0) + (showBytes ? 9 : 0) + (showRefs ? 10 : 0) + 16 + (spaces + 3) / 4;
+					strl_t col = (showAddress ? 6 : 0) + (showBytes ? 7 : 0) + (showRefs ? 9 : 0) + (showLabels ? 6 : 0) + 5 + (spaces + 3) / 4;
 					ImVec2 srcPos(linePos.x + col * fontCharWidth, linePos.y);
 					ImGui::SetCursorPos(srcPos);
 					ImGui::PushStyleColor(ImGuiCol_Text, C64_YELLOW);
