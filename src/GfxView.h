@@ -21,6 +21,7 @@ struct GfxView
 		C64_ExtText,
 		C64_Text_MC,
 		C64_MCBM,
+		C64_ColumnScreen_MC,
 		C64_Current,
 		Apl2_Text,
 		Apl2_Hires,
@@ -38,11 +39,13 @@ struct GfxView
 
 	char address_screen[64];
 	char address_gfx[64];
+	char address_col[64];
 	char columns_str[64];
 	char rows_str[64];
 
 	uint32_t addrScreenValue;
 	uint32_t addrGfxValue;
+	uint32_t addrColValue;
 	uint32_t columns;
 	uint32_t rows;
 
@@ -84,6 +87,7 @@ struct GfxView
 	void CreateC64MulticolorTextBitmap(uint32_t* dst, const uint32_t* palette, uint16_t bitmap, uint16_t screen, uint32_t cl, uint32_t rw);
 	void CreateC64MulticolorBitmapBitmap(uint32_t* dst, const uint32_t* palette, uint16_t bitmap, uint16_t screen, uint32_t cl, uint32_t rw);
 	void CreateC64SpritesBitmap(uint32_t* dst, int lines, uint32_t width, const uint32_t* palette);
+	void CreateC64ColorTextColumns(uint32_t* d, const uint32_t* pal, uint16_t bitmap, uint16_t screen, uint16_t colorAddr, uint32_t cl, uint32_t rw);
 	void CreateC64CurrentBitmap(uint32_t* d, const uint32_t* pal);
 
 	void CreateApple2TextBitmap(uint32_t* dst, int lines, uint32_t width, const uint32_t* palette);

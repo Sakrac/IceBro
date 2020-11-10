@@ -32,7 +32,8 @@ static GfxView::Mode sGenericModes[] = { GfxView::Planar, GfxView::Columns };
 static GfxView::Mode sC64Modes[] = { GfxView::C64_Bitmap, GfxView::C64_ColBitmap,
 									 GfxView::C64_Sprites, GfxView::C64_Text,
 									 GfxView::C64_ExtText, GfxView::C64_Text_MC,
-									 GfxView::C64_MCBM, GfxView::C64_Current };
+									 GfxView::C64_MCBM, GfxView::C64_ColumnScreen_MC,
+									 GfxView::C64_Current };
 static GfxView::Mode Apple2Modes[] = { GfxView::Apl2_Text, GfxView::Apl2_Hires, GfxView::Apl2_HR_Col };
 
 #define ColRGBA( r, g, b, a ) uint32_t((a<<24)|(b<<16)|(g<<8)|(r))
@@ -89,6 +90,11 @@ void GfxView::ReadConfig(strref config)
 			strovl addr_gfx_str(address_gfx, sizeof(address_gfx));
 			addr_gfx_str.copy(value);
 			addrGfxValue = ValueFromExpression(addr_gfx_str.c_str());
+			reeval = true;
+		} else if (name.same_str("addressColor") && type == CPT_Value) {
+			strovl addr_col_str(address_col, sizeof(address_col));
+			addr_col_str.copy(value);
+			addrColValue = ValueFromExpression(addr_col_str.c_str());
 			reeval = true;
 		} else if (name.same_str("columns_str") && type == CPT_Value) {
 			strovl col_str(columns_str, sizeof(columns_str));
@@ -147,31 +153,13 @@ void GfxView::Draw(int index)
 	{
 		strown<32> name("gfxSetupColumns");
 		name.append_num(index + 1, 1, 10);
-		ImGui::Columns(5, name.c_str(), true);  // 4-ways, no border
+		ImGui::Columns(4, name.c_str(), true);  // 4-ways, no border
 		name.copy("system##");
 		name.append_num(index + 1, 1, 10);
 		ImGui::Combo(name.c_str(), &displaySystem, "Generic\0C64\0Apple2\0\0");
 		ImGui::NextColumn();
 
 		int prevMode = displayMode;
-		name.copy("mode##");
-		name.append_num(index + 1, 1, 10);
-		switch (displaySystem) {
-			case Generic:
-				ImGui::Combo(name.c_str(), &genericMode, "Planar\0Columns\0\0");
-				displayMode = sGenericModes[genericMode];
-				break;
-			case C64:
-				ImGui::Combo(name.c_str(), &c64Mode, "Bitmap\0Col Bitmap\0Sprites\0Text\0ExtText\0Text MC\0MCBM\0Current\0\0");
-				displayMode = sC64Modes[c64Mode];
-				break;
-			case Apple2:
-				ImGui::Combo(name.c_str(), &apple2Mode, "Apl2 Text\0Apl2 Hires\0Apl2 Col\0\0");
-				displayMode = Apple2Modes[apple2Mode];
-				break;
-		}
-		if (prevMode != displayMode) { redraw = true; }
-		ImGui::NextColumn();
 		if (displayMode != C64_Current) {
 			name.copy("screen##");
 			name.append_num(index + 1, 1, 10);
@@ -187,7 +175,40 @@ void GfxView::Draw(int index)
 				redraw = true;
 			}
 			ImGui::NextColumn();
+			name.copy("color##");
+			name.append_num(index + 1, 1, 10);
+			if (ImGui::InputText(name.c_str(), address_col, sizeof(address_col))) {
+				addrColValue = ValueFromExpression(address_col);
+				redraw = true;
+			}
+			ImGui::NextColumn();
+		} else {
+			ImGui::NextColumn();
+			ImGui::NextColumn();
+			ImGui::NextColumn();
 		}
+
+		name.copy("gfxSetupNext");
+		name.append_num(index + 1, 1, 10);
+		ImGui::Columns(4, name.c_str(), true);  // 4-ways, no border
+		name.copy("mode##");
+		name.append_num(index + 1, 1, 10);
+		switch (displaySystem) {
+		case Generic:
+			ImGui::Combo(name.c_str(), &genericMode, "Planar\0Columns\0\0");
+			displayMode = sGenericModes[genericMode];
+			break;
+		case C64:
+			ImGui::Combo(name.c_str(), &c64Mode, "Bitmap\0Col Bitmap\0Sprites\0Text\0ExtText\0Text MC\0MCBM\0Colmn Text MC\0Current\0\0");
+			displayMode = sC64Modes[c64Mode];
+			break;
+		case Apple2:
+			ImGui::Combo(name.c_str(), &apple2Mode, "Apl2 Text\0Apl2 Hires\0Apl2 Col\0\0");
+			displayMode = Apple2Modes[apple2Mode];
+			break;
+		}
+		if (prevMode != displayMode) { redraw = true; }
+		ImGui::NextColumn();
 		name.copy("zoom##");
 		name.append_num(index + 1, 1, 10);
 		ImGui::Combo(name.c_str(), &zoom, "Pixel\0Double\0Quad\0Fit X\0Fit Y\0Fit Window\0\0");
@@ -195,7 +216,8 @@ void GfxView::Draw(int index)
 		bool modeOpt = displayMode == C64_Bitmap || displayMode == C64_Text || displayMode == C64_Sprites;
 
 		if (displayMode != C64_Current) {
-			ImGui::Columns(modeOpt ? 3 : 2);
+			ImGui::NextColumn();
+			//			ImGui::Columns(modeOpt ? 3 : 2);
 
 			if (displayMode == C64_Bitmap || displayMode == C64_Text) {
 				int colMode = color ? 1 : (multicolor ? 2 : 0), prevMode = colMode;
@@ -327,6 +349,7 @@ void GfxView::Create8bppBitmap()
 		case C64_Text_MC: CreateC64MulticolorTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
 		case C64_MCBM: CreateC64MulticolorBitmapBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
 		case C64_Sprites: CreateC64SpritesBitmap(d, linesHigh, w, c64pal); break;
+		case C64_ColumnScreen_MC: CreateC64ColorTextColumns(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw); break;
 		case C64_Current: CreateC64CurrentBitmap(d, c64pal); break;
 
 		case Apl2_Text: CreateApple2TextBitmap(d, linesHigh, w, c64pal); break;
@@ -664,6 +687,37 @@ void GfxView::CreateC64SpritesBitmap(uint32_t* d, int linesHigh, uint32_t w, con
 	}
 }
 
+void GfxView::CreateC64ColorTextColumns(uint32_t* d, const uint32_t* pal, uint16_t g, uint16_t a, uint16_t f, uint32_t cl, uint32_t rw)
+{
+	uint8_t k[4] = { uint8_t(Get6502Byte(0xd021) & 0xf), uint8_t(Get6502Byte(0xd022) & 0xf), uint8_t(Get6502Byte(0xd023) & 0xf), 0 };
+	for (uint32_t x = 0; x < cl; x++) {
+		uint32_t* o = d + x * 8;
+		for (uint32_t y = 0; y < rw; y++) {
+			uint8_t chr = Get6502Byte(a++);
+			uint8_t charCol = Get6502Byte(f++);
+			k[3] = charCol & 7;
+			uint8_t mc = charCol & 0x8;
+			uint16_t cs = g + 8 * chr;
+			for (int h = 0; h < 8; h++) {
+				uint8_t b = Get6502Byte(cs++);
+				if (mc) {
+					for (int bit = 6; bit >= 0; bit -= 2) {
+						uint8_t c = k[(b >> bit) & 0x3];
+						*o++ = pal[c];
+						*o++ = pal[c];
+					}
+				}
+				else {
+					for (int bit = 7; bit >= 0; bit--) {
+						*o++ = pal[k[((b >> bit) & 1) ? 3 : 0]];
+					}
+				}
+				o += (cl - 1) * 8;
+			}
+		}
+	}
+}
+
 void GfxView::CreateApple2HiresBitmap(uint32_t* d, int linesHigh, uint32_t w, const uint32_t* pal)
 {
 	int sy = linesHigh > (8 * 24) ? (8 * 24) : linesHigh;
@@ -718,15 +772,23 @@ GfxView::GfxView() : open(false), reeval(false)
 {
 	addrScreenValue = 0x0400;
 	addrGfxValue = 0x0000;
+	addrColValue = 0xd800;
 	columns = 40;
 	rows = 25;
 	zoom = Zoom_FitWindow;
+	displaySystem = 1;
 	displayMode = C64_Text;
+	genericMode = GfxView::Planar;
+	c64Mode = GfxView::C64_Current;
+	apple2Mode = GfxView::Apl2_Text;
+	bitmap = nullptr;
 	bitmapSize = 0;
 	texture = 0;
+	open = true;
 
-	sprintf_s(columns_str, sizeof(columns_str), "%d", columns);
-	sprintf_s(rows_str, sizeof(rows_str), "%d", rows);
-
-	bitmap = nullptr;
+	sprintf_s(address_screen, "$%04x", addrScreenValue);
+	sprintf_s(address_gfx, "$%04x", addrGfxValue);
+	sprintf_s(address_col, "$%04x", addrColValue);
+	sprintf_s(columns_str, "%d", columns);
+	sprintf_s(rows_str, "%d", rows);
 }
