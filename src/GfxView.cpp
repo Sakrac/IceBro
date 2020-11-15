@@ -328,26 +328,26 @@ void GfxView::Create8bppBitmap()
 			if (color) {
 				CreateC64ColorBitmapBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw);
 			} else if (multicolor) {
-				CreateC64MulticolorBitmapBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
+				CreateC64MulticolorBitmapBitmap(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw); break;
 			} else {
 				CreateC64BitmapBitmap(d, c64pal, addrGfxValue, cl, rw); break;
 			}
 			break;
 
 		case C64_ColBitmap: CreateC64ColorBitmapBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
-		case C64_ExtText: CreateC64ExtBkgTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
+		case C64_ExtText: CreateC64ExtBkgTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw); break;
 
 		case C64_Text:
 			if (color) {
-				CreateC64ColorTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw);
+				CreateC64ColorTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw);
 			} else if (multicolor) {
-				CreateC64MulticolorTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
+				CreateC64MulticolorTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw); break;
 			} else {
 				CreateC64TextBitmap(d, c64pal, cl, rw); break;
 			}
 			break;
-		case C64_Text_MC: CreateC64MulticolorTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
-		case C64_MCBM: CreateC64MulticolorBitmapBitmap(d, c64pal, addrGfxValue, addrScreenValue, cl, rw); break;
+		case C64_Text_MC: CreateC64MulticolorTextBitmap(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw); break;
+		case C64_MCBM: CreateC64MulticolorBitmapBitmap(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw); break;
 		case C64_Sprites: CreateC64SpritesBitmap(d, linesHigh, w, c64pal); break;
 		case C64_ColumnScreen_MC: CreateC64ColorTextColumns(d, c64pal, addrGfxValue, addrScreenValue, addrColValue, cl, rw); break;
 		case C64_Current: CreateC64CurrentBitmap(d, c64pal); break;
@@ -431,18 +431,18 @@ void GfxView::CreateC64CurrentBitmap(uint32_t* d, const uint32_t* pal)
 	bool mc = (d016 & 0x10) ? true : false;
 
 	if (d011 & 0x40) {
-		CreateC64ExtBkgTextBitmap(d, pal, chars, screen, 40, 25);
+		CreateC64ExtBkgTextBitmap(d, pal, chars, screen, 0xd800, 40, 25);
 	} else if (d011 & 0x20) {
 		if (mc) {
-			CreateC64MulticolorBitmapBitmap(d, pal, chars, screen, 40, 25);
+			CreateC64MulticolorBitmapBitmap(d, pal, chars, screen, 0xd800, 40, 25);
 		} else {
 			CreateC64ColorBitmapBitmap(d, pal, chars & 0xe000, screen, 40, 25);
 		}
 	} else {
 		if (mc) {
-			CreateC64MulticolorTextBitmap(d, pal, chars, screen, 40, 25);
+			CreateC64MulticolorTextBitmap(d, pal, chars, screen, 0xd800, 40, 25);
 		} else {
-			CreateC64ColorTextBitmap(d, pal, chars, screen, 40, 25);
+			CreateC64ColorTextBitmap(d, pal, chars, screen, 0xd800, 40, 25);
 		}
 	}
 
@@ -535,14 +535,14 @@ void GfxView::CreateC64ColorBitmapBitmap(uint32_t* d, const uint32_t* pal, uint1
 	}
 }
 
-void GfxView::CreateC64ExtBkgTextBitmap(uint32_t* d, const uint32_t* pal, uint16_t g, uint16_t a, uint32_t cl, uint32_t rw)
+void GfxView::CreateC64ExtBkgTextBitmap(uint32_t* d, const uint32_t* pal, uint16_t g, uint16_t a, uint16_t cm, uint32_t cl, uint32_t rw)
 {
 	bool romFont = g == 0;
 	for (uint32_t y = 0; y < rw; y++) {
 		for (uint32_t x = 0; x < cl; x++) {
 			uint8_t chr = Get6502Byte(a++);
 			uint32_t bg = pal[Get6502Byte((chr >> 6) + 0xd021) & 0xf];
-			uint32_t fg = pal[Get6502Byte(y * 40 + x + 0xd800) & 0xf];
+			uint32_t fg = pal[Get6502Byte(y * 40 + x + cm) & 0xf];
 			chr &= 0x3f;
 			uint16_t cs = g + 8 * chr;
 			for (int h = 0; h < 8; h++) {
@@ -577,9 +577,8 @@ void GfxView::CreateC64TextBitmap(uint32_t* d, const uint32_t* pal, uint32_t cl,
 	}
 }
 
-void GfxView::CreateC64ColorTextBitmap(uint32_t* d, const uint32_t* pal, uint16_t g, uint16_t a, uint32_t cl, uint32_t rw)
+void GfxView::CreateC64ColorTextBitmap(uint32_t* d, const uint32_t* pal, uint16_t g, uint16_t a, uint16_t f, uint32_t cl, uint32_t rw)
 {
-	uint16_t f = 0xd800;	// hardwired color buffer
 	uint8_t k = Get6502Byte(0xd021) & 0xf;
 	uint32_t *o = d;
 	bool romFont = a == 0;
@@ -602,14 +601,13 @@ void GfxView::CreateC64ColorTextBitmap(uint32_t* d, const uint32_t* pal, uint16_
 
 }
 
-void GfxView::CreateC64MulticolorTextBitmap(uint32_t* d, const uint32_t* pal, uint16_t g, uint16_t a, uint32_t cl, uint32_t rw)
+void GfxView::CreateC64MulticolorTextBitmap(uint32_t* d, const uint32_t* pal, uint16_t g, uint16_t a, uint16_t cm, uint32_t cl, uint32_t rw)
 {
-	uint16_t f = 0xd800;	// hardwired color buffer
 	uint8_t k[4] = { uint8_t(Get6502Byte(0xd021) & 0xf), uint8_t(Get6502Byte(0xd022) & 0xf), uint8_t(Get6502Byte(0xd023) & 0xf), 0 };
 	uint32_t *o = d;
 	for (uint32_t y = 0; y < rw; y++) {
 		for (uint32_t x = 0; x < cl; x++) {
-			k[3] = Get6502Byte(f++) & 0xf;
+			k[3] = Get6502Byte(cm++) & 0xf;
 			int mc = k[3] & 0x8;
 			k[3] &= 7;
 			uint8_t chr = Get6502Byte(a++);
@@ -635,14 +633,13 @@ void GfxView::CreateC64MulticolorTextBitmap(uint32_t* d, const uint32_t* pal, ui
 	}
 }
 
-void GfxView::CreateC64MulticolorBitmapBitmap(uint32_t* d, const uint32_t* pal, uint16_t a, uint16_t s, uint32_t cl, uint32_t rw)
+void GfxView::CreateC64MulticolorBitmapBitmap(uint32_t* d, const uint32_t* pal, uint16_t a, uint16_t s, uint16_t cm, uint32_t cl, uint32_t rw)
 {
-	uint16_t f = 0xd800;	// hardwired color buffer
 	uint8_t k = Get6502Byte(0xd021) & 15;
 	for (uint32_t y = 0; y < rw; y++) {
 		for (uint32_t x = 0; x < cl; x++) {
 			uint8_t sc = Get6502Byte(s++);
-			uint8_t fc = Get6502Byte(f++);
+			uint8_t fc = Get6502Byte(cm++);
 			for (int h = 0; h < 8; h++) {
 				uint8_t b = Get6502Byte(a++);
 				for (int p = 3; p >= 0; p--) {
