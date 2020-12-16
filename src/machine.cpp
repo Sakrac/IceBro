@@ -1,10 +1,11 @@
 // 64k machine representation
-
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
 #include <stdio.h>
 #include "machine.h"
 #include "cpu.h"
-#include "Sym.h"
+#include "sym.h"
 #include "boot_ram.h"
 #include "Expressions.h"
 #include "struse/struse.h"

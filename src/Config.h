@@ -1,6 +1,6 @@
 #pragma once
 
-#include "struse\struse.h"
+#include "struse/struse.h"
 
 struct ConfigContext {
 	int depth;

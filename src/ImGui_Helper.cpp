@@ -1,4 +1,4 @@
-#include "ImGui.h"
+#include "imgui.h"
 #include "imgui_internal.h"
 
 void ForceKeyboardCanvas(const char* label)
@@ -8,7 +8,7 @@ void ForceKeyboardCanvas(const char* label)
 		return;
 
 	ImGuiContext& g = *GImGui;
-	const ImGuiIO& io = g.IO;
+//	const ImGuiIO& io = g.IO;
 
 	const ImGuiID id = window->GetID(label);
 

@@ -1,7 +1,6 @@
-#pragma once
-#include "imgui\imgui.h"
+#include "imgui.h"
 #include "Breakpoints.h"
-#include "struse\struse.h"
+#include "struse/struse.h"
 #include "BreakView.h"
 #include "machine.h"
 #include "Config.h"

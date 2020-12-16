@@ -62,6 +62,13 @@ typedef unsigned int strl_t;
 //	example: printf("string is " STROP_FMT "\n", STROP_ARG(strref))
 #define STRREF_FMT "%.*s"
 #define STRREF_ARG(s) (int)(s).get_len(), (s).get()
+#ifdef _WIN32
+#define DIR_SEP '\\'
+#define NOT_DIR_SEP '/'
+#else
+#define NOT_DIR_SEP '\\'
+#define DIR_SEP '/'
+#endif
 
 // internal helper functions for strref
 int _find_rh(const char *text, strl_t len, const char *comp, strl_t comp_len);
@@ -96,9 +103,9 @@ public:
 
 	bool is_substr(const char *sub) const { return sub>=string && sub<=(string+length); }
 	strl_t substr_offs(strref substr) const {
-		if (is_substr(substr.get())) return strl_t(substr.get()-get()); return 0; }
+		if (is_substr(substr.get())) { return strl_t(substr.get()-get()); } return 0; }
 	strl_t substr_end_offs(strref substr) const {
-		if (is_substr(substr.get())) return strl_t(substr.get()-get()) + substr.get_len(); return 0; }
+		if (is_substr(substr.get())) { return strl_t(substr.get()-get()) + substr.get_len(); } return 0; }
 	bool is_empty() const { return length==0; }
 
 	// get fnv1a hash for string
@@ -371,9 +378,6 @@ public:
 	// find any char from str or char range or char - with backslash prefix
 	int find_range_char_within_range(const strref range_find, const strref range_within, strl_t pos = 0) const;
 
-	// find but not within parenthesis
-	int find_skip_parens(char token) const;
-
 	// counts
 	int substr_count(const strref str) const; // count the occurrences of the argument in this string
 	int substr_count_bookend(const strref str, const strref bookend) const;
@@ -497,7 +501,7 @@ public:
 	strref get_substr(int pos, strl_t len) const { return get_substr((strl_t)pos, len); }
 
 	strref get_skipped(strl_t len) const { if (len<length)
-		return strref(string+len, length-len); return strref(); }
+		{ return strref(string+len, length-len); } return strref(); }
 
 	// get this strref without leading whitespace
 	strref get_skip_ws() const { return get_skipped(len_whitespace()); }
@@ -517,7 +521,7 @@ public:
 	strref get_valid_json_string() const {
 		const uint8_t *s = get_u(); strl_t l = length; while (l) {
 		uint8_t c = *s++; if (!(c=='+' || c=='.' || c=='-' || is_number(c) || c>='A'))
-		break; l--;	} return strref(string, length-l); }
+		{ break; } l--; } return strref(string, length-l); }
 
 	strref before(char c) const {
 		int o = find(c); if (o>=0) return strref(string, o); return strref(); }
@@ -527,10 +531,6 @@ public:
 
 	strref before_or_full(char c) const {
 		int o = find(c); if (o>=0) return strref(string, o); return *this; }
-
-	strref before_or_full_track_parens(char c) const {
-		int o = find_skip_parens(c); if (o >= 0) return strref(string, o); return *this;
-	}
 
 	strref before_last(char c) const {
 		int o = find_last(c); if (o>=0) return strref(string, o); return strref(); }
@@ -545,39 +545,39 @@ public:
 		int o = find(str); if (o<0) return *this; return strref(string+o, length-o); }
 
 	strref after_or_full(char c) const { int o = find(c);
-		if (o>=0) return strref(string+o+1, length-o-1); return *this; }
+		if (o>=0) { return strref(string+o+1, length-o-1); } return *this; }
 
 	strref after_or_full(char c, char d) const { int o = find(c, d);
-		if (o>=0) return strref(string+o+1, length-o-1); return *this; }
+		if (o>=0) { return strref(string+o+1, length-o-1); } return *this; }
 
 	strref after(char c) const { int o = find(c);
-		if (o>=0) return strref(string+o+1, length-o-1); return strref(); }
+		if (o>=0) { return strref(string+o+1, length-o-1); } return strref(); }
 
 	strref after_last_or_full(char c) const { int o = find_last(c);
-		if (o>=0) return strref(string+o+1, length-o-1); return *this; }
+		if (o>=0) { return strref(string+o+1, length-o-1); } return *this; }
 
 	strref after_last_or_full(char c, char d) const {
-		int o = find_last(c, d); if (o>=0) return strref(string+o+1, length-o-1); return *this; }
+		int o = find_last(c, d); if (o>=0) { return strref(string+o+1, length-o-1); } return *this; }
 
 	strref after_last(char c) const { int o = find_last(c); if (o>=0)
-			return strref(string+o+1, length-o-1); return strref(); }
+			{ return strref(string+o+1, length-o-1); } return strref(); }
 
 	strref after_last(char c, char d) const { int o = find_last(c, d); if (o>=0)
-		return strref(string+o+1, length-o-1); return strref(); }
+		{ return strref(string+o+1, length-o-1); } return strref(); }
 
 	strref get_alphanumeric() const { strref r(*this); r.skip_whitespace();
-		if (strl_t l = r.len_alphanumeric()) return strref(string, l); return strref(); }
+		if (strl_t l = r.len_alphanumeric()) { return strref(string, l); } return strref(); }
 	
 	strref get_label() const { return strref(string, len_label()); }
 	
 	strref before_or_full_case(const strref str) const { int o = find_case(str);
-		if (o<0) return *this; return strref(string, o); }
+		if (o<0) { return *this; } return strref(string, o); }
 
 	strref after_or_full_case(const strref str) const { int o = find_case(str);
-		if (o<0) return *this; return strref(string+o, length-o); }
+		if (o<0) { return *this; } return strref(string+o, length-o); }
 
     strref between(char c, char d) { int s = find(c); if (s>=0) { int e = find_after(d, (strl_t)s);
-        if (e>=0) return get_substr(strl_t(s+1), strl_t(e-s-1)); } return strref(); }
+        if (e>=0) { return get_substr(strl_t(s+1), strl_t(e-s-1)); } } return strref(); }
 
 	// tokenization
 	strref split(strl_t pos);
@@ -586,8 +586,6 @@ public:
 	strref split_token_any(const strref chars);
 	strref split_token_trim(char c);
 	strref split_token_any_trim(const strref chars);
-	strref split_token_track_parens(char c);
-	strref split_token_trim_track_parens(char c);
 	strref split_range(const strref range, strl_t pos=0);
 	strref split_range_trim(const strref range, strl_t pos=0);
 	strref split_label();
@@ -602,13 +600,7 @@ public:
 
 	// scoped_block_skip with C style comments
 	strl_t scoped_block_comment_len();
-	strl_t scoped_block_utf8_comment_len();
 	strref scoped_block_comment_skip(bool include = false) { strref ret = split(scoped_block_comment_len()); if (!include) { ++ret; ret.clip(1); } return ret; }
-	strref scoped_block_utf8_comment_skip( bool include = false ) {
-		strref ret = split( scoped_block_utf8_comment_len() );
-		if( !include ) { ++ret; ret.clip( 1 ); }
-		return ret;
-	}
 
 	// check matching characters that are terminated by any character in term or ends
 	strl_t match_chars_str(const strref match, const strref term = strref());
@@ -630,14 +622,13 @@ public:
 		int l = strref(string+f, length-f).find(b); if (l<0) l = 0; return strref(string+f, l); }
 
 	strref get_quote_xml() const;
-	strref skip_quote_xml();
 	int find_quoted_xml(char d) const; // returns length up to the delimiter d with xml quotation rules, or -1 if delimiter not found
 	int find_quoted(char d) const; // returns length up to the delimiter d with c/c++ quotation rules, or -1 if delimiter not found
 
 	strref next_chunk_xml(char open, char close) const { int s = find_quoted_xml(open);
-		if (s<0) return strref(); strref left = get_skipped(strl_t(s+1)); return left.get_clipped(strl_t(left.find_quoted_xml(close))); }
+		if (s<0) { return strref(); } strref left = get_skipped(strl_t(s+1)); return left.get_clipped(strl_t(left.find_quoted_xml(close))); }
 	strref next_chunk_quoted(char open, char close) const { int s = find_quoted(open);
-		if (s<0) return strref(); strref left = get_skipped(strl_t(s+1)); return left.get_clipped(strl_t(left.find_quoted(close))); }
+		if (s<0) { return strref(); } strref left = get_skipped(strl_t(s+1)); return left.get_clipped(strl_t(left.find_quoted(close))); }
 	void skip_chunk(const strref chunk) { strl_t add = strl_t(chunk.string-string)+chunk.length+1UL;
 		if (add<length) { string += add; length -= add; } else { clear(); } }
 };
@@ -654,7 +645,6 @@ void _strmod_substrcopy(char *string, strl_t length, strl_t cap, strl_t src, str
 void _strmod_tolower(char *string, strl_t length);
 void _strmod_toupper(char *string, strl_t length);
 strl_t _strmod_format_insert(char *string, strl_t length, strl_t cap, strl_t pos, strref format, const strref *args);
-strl_t _strmod_append_num(char* str, strl_t left, uint32_t num, strl_t size, uint32_t radix);
 strl_t _strmod_remove(char *string, strl_t length, char a);
 strl_t _strmod_remove(char *string, strl_t length, strl_t start, strl_t len);
 strl_t _strmod_exchange(char *string, strl_t length, strl_t cap, strl_t start, strl_t size, const strref insert);
@@ -702,10 +692,10 @@ public:
 	void add_len(strl_t l) { add_len_int(fit_add(l)); }
 
 	// offset operators will always return a strref
-	strref operator+(const strl_t skip) { if (skip<len())
-		return strref(charstr()+skip, len()-skip); return strref(); }
-	strref operator+(const int skip) { if (skip>=0 && strl_t(skip)<len())
-		return strref(charstr()+skip, len()-skip); return strref(); }
+	strref operator+(const strl_t skip) { if (skip<len()) {
+		return strref(charstr()+skip, len()-skip); } return strref(); }
+	strref operator+(const int skip) { if (skip>=0 && strl_t(skip)<len()) {
+		return strref(charstr()+skip, len()-skip); } return strref(); }
 
 	// get character at position
 	char operator[](size_t pos) { return pos<len() ? charstr()[pos] : 0; }
@@ -767,7 +757,7 @@ public:
 	int find_after_last(char a, char b) const { return get_strref().find_after_last(a, b); }
 	int find_after_last(char a1, char a2, char b) const { return get_strref().find_after_last(a1, a2, b); }
 	int find(const strref str) const { return get_strref().find(str); }
-	int find(const strref str, strl_t pos) const { get_strref().find(str, pos); }
+	int find(const strref str, strl_t pos) const { return get_strref().find(str, pos); }
 	int find(const char *str, strl_t pos = 0) const { return get_strref().find(str, pos); }
 	int find_case(const strref str) const { return get_strref().find_case(str); }
 	int find_case(const char *str) const { return get_strref().find_case(str); }
@@ -933,12 +923,23 @@ public:
 		set_len_int(_strmod_format_insert(charstr(), len(), cap(), pos, format, args)); }
 
 	strmod& append_num(uint32_t num, strl_t size, strl_t radix) {
-		add_len_int( _strmod_append_num( charstr() + len(), cap() - len(), num, size, radix ) );
+		strl_t div = 1;
+		if(!size) {
+			strl_t mul = 9;
+			size = 1;
+			while( num > mul ) { size++; mul = (mul+1)*10-1; }
+		}
+		for(strl_t n=1; n<size; ++n) { div *= radix; }
+		for(strl_t a=0; a<size; ++a) {
+			char v = (num / div) % radix + '0';
+			append( v<='9' ? v : (v+'a'-'0'-10) );
+			div /= radix;
+		}
 		return *this;
 	}
 
 	// c style sprintf (work around windows _s preference)
-#ifdef _WIN32
+#ifdef WIN32
 	int sprintf(const char *format, ...) { va_list args; va_start(args, format);
 		set_len_int((strl_t)vsnprintf_s(charstr(), cap(), _TRUNCATE, format, args)); va_end(args); return (int)len(); }
 	int sprintf_at(strl_t pos, const char *format, ...) { va_list args; va_start(args, format);
@@ -965,8 +966,8 @@ public:
 		set_len(_strmod_inplace_replace_int(charstr(), len(), cap(), a, b)); return get_strref(); }
 
 	// replace strings bookended by a specific string
-	strref replace_bookend(const strref a, const strref b, const strref bookend) { if (len() && get() && a && bookend)
-		set_len(_strmod_inplace_replace_bookend_int(charstr(), len(), cap(), a, b, bookend)); return get_strref(); }
+	strref replace_bookend(const strref a, const strref b, const strref bookend) { if (len() && get() && a && bookend) {
+		set_len(_strmod_inplace_replace_bookend_int(charstr(), len(), cap(), a, b, bookend)); } return get_strref(); }
 
 	// replace a string found within this string with another string
     void exchange(strl_t pos, strl_t size, const strref insert) {
@@ -989,8 +990,8 @@ public:
 	char* charend() { return charstr()+len(); }
 
 	// remove a portion of this string
-	void erase(strl_t pos, strl_t length) { if (pos<len()) { if ((pos+length)>len())
-		length = len()-pos; if (length) { for (strl_t i = 0; i<length; i++)
+	void erase(strl_t pos, strl_t length) { if (pos<len()) { if ((pos+length)>len()) {
+		length = len()-pos; } if (length) { for (strl_t i = 0; i<length; i++)
 		charstr()[pos+i] = charstr()[pos+i+length];	} sub_len_int(length); } }
 
 	strmod& cleanup_path() { 
@@ -1877,20 +1878,6 @@ int strref::find_last(char c, char d) const
 			left--;
 		}
 	}
-	return -1;
-}
-
-int strref::find_skip_parens(char token) const
-{
-	int parens = 0;
-	const char* scan = string;
-	strl_t left = length;
-	while (left && (parens || *scan != token)) {
-		if (*scan == '(') { ++parens; } else if (*scan == ')' && parens) { --parens; }
-		--left;
-		++scan;
-	}
-	if (left) { return length - left; }
 	return -1;
 }
 
@@ -4077,28 +4064,6 @@ strref strref::get_quote_xml() const
 	return strref();
 }
 
-// if this string begins as an xml quote return that.
-strref strref::skip_quote_xml()
-{
-	char quote_char = get_first();
-	if( quote_char != '"' && quote_char != '\'' )
-		return strref();
-
-	const char *scan = string + 1;
-	strl_t left = length - 1;
-	while( left ) {
-		char c = *scan++;
-		if( c == quote_char ) {
-			strref ret( string + 1, length - left - 1 );
-			string = scan+1;
-			length = left-2;
-			return ret;
-		}
-		--left;
-	}
-	return strref();
-}
-
 // find the character d outside of a quote
 int strref::find_quoted(char d) const
 {
@@ -4139,15 +4104,6 @@ strref strref::split_token( char c ) {
 	return r;
 }
 
-strref strref::split_token_track_parens(char c)
-{
-	int t = find_skip_parens(c);
-	if (t < 0) t = (int)length;
-	strref r = strref(string, strl_t(t));
-	*this += t + 1;
-	return r;
-}
-
 strref strref::split_token_any( const strref chars )
 {
 	strref r; int t = find_any_char_of( chars );
@@ -4158,13 +4114,6 @@ strref strref::split_token_any( const strref chars )
 	return r;
 }
 
-strref strref::split_token_trim_track_parens(char c)
-{
-	strref r = split_token_track_parens(c);
-	skip_whitespace();
-	r.trim_whitespace();
-	return r;
-}
 strref strref::split_token_trim( char c ) {
 	strref r = split_token( c );
 	skip_whitespace();
@@ -4322,31 +4271,6 @@ strl_t strref::scoped_block_comment_len()
 	return 0;
 }
 
-strl_t strref::scoped_block_utf8_comment_len()
-{
-	strref str = *this;
-	size_t scope = str.pop_utf8();
-	if( length && ( scope == '(' || scope == '[' || scope == '{' || scope == '<' ) )
-	{
-		char close = scope == '<' ? '>' : ( scope == '(' ? ')' : ( scope == '[' ? ']' : '}' ) );
-		strl_t depth = 1;
-		do {
-			size_t c = str.pop_utf8();
-			if( c == '/' && str.get_len() && ( str[0] == '/' || str[1] == '*' ) ) {
-				c = str.pop_utf8();
-				strl_t skip = c == '/' ? str.len_next_line() : str.find_or_full( "*/" );
-				str += skip;
-			}
-			else if( c == scope )
-				depth++;
-			else if( c == close )
-				depth--;
-		} while( depth && str.valid() );
-		if( !depth )
-			return strl_t( str.string - string );
-	}
-	return 0;
-}
 
 
 // return the current line of text and move this string ahead to the next.
@@ -4622,25 +4546,6 @@ strl_t _strmod_format_insert(char *string, strl_t length, strl_t cap, strl_t pos
 		}
 	}
 	return length;
-}
-
-strl_t _strmod_append_num( char* str, strl_t left, uint32_t num, strl_t size, uint32_t radix )
-{
-	strl_t div = 1;
-	if( !size ) {
-		uint32_t mul = 1;
-		do { ++size; mul *= radix; } while( mul <= num );
-	}
-	for( strl_t n = 1; n<size; ++n ) { div *= radix; }
-	strl_t added = 0;
-	for( strl_t a = 0; a<size && left; ++a ) {
-		char v = (num / div) % radix + '0';
-		div /= radix;
-		*str++ = v <= '9' ? v : (v + 'a' - '0' - 10);
-		--left;
-		++added;
-	}
-	return added;
 }
 
 // remove all instances of a character from a string
@@ -5133,18 +5038,20 @@ strl_t _strmod_cleanup_path(char *file, strl_t len)
 {
 	strl_t pos = 0;
 	char *trg = file;
+	while(len>4 && file[len-3]==DIR_SEP && file[len-2]=='.' && file[len-1]=='.') {
+		 len -= 4;
+		 while(len>1 && file[len]!=DIR_SEP) {--len;}
+	 }
 	while (len) {
 		len--;
 		char c = *file++;
-		if (c=='/')
-			c='\\';
+		if (c==NOT_DIR_SEP) { c=DIR_SEP; }
 		trg[pos] = c;
-		if ((c=='/' || c=='\\') && len>=3 && *file=='.' && file[1]=='.' && (file[2] =='/' || file[2]=='\\') && pos) {
+		if ((c==NOT_DIR_SEP || c==DIR_SEP) && len>=3 && *file=='.' && file[1]=='.' && (file[2] =='/' || file[2]=='\\') && pos) {
 			// attempt to rewind
 			strl_t rew = pos-1;
 			while (rew) {
-				if (trg[rew-1] == '/' || trg[rew-1]=='\\')
-					break;
+				if (trg[rew-1] == NOT_DIR_SEP || trg[rew-1]==DIR_SEP) { break; }
 				--rew;
 			}
 			pos = rew;
