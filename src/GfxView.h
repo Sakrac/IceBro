@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "struse\struse.h"
+#include "struse/struse.h"
 struct UserData;
 
 struct GfxView

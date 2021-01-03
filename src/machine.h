@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 
 // complete representation of 6502 registers
 typedef struct Regs {

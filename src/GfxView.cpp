@@ -1,7 +1,7 @@
 // example for creating a texture:
 // static void ImGui_ImplDX11_CreateFontsTexture()
 #include <stdio.h>
-#include "imgui\ImGui.h"
+#include "imgui/imgui.h"
 #include "Views.h"
 #include "machine.h"
 #include "GfxView.h"
@@ -9,6 +9,10 @@
 #include "Expressions.h"
 #include "Config.h"
 #include "ViceConnect.h"
+
+#ifndef _MSC_VER
+#define sprintf_s sprintf
+#endif
 
 extern unsigned char _fruitFont[];
 extern unsigned char _aStartupFont[];
@@ -213,7 +217,7 @@ void GfxView::Draw(int index)
 		name.append_num(index + 1, 1, 10);
 		ImGui::Combo(name.c_str(), &zoom, "Pixel\0Double\0Quad\0Fit X\0Fit Y\0Fit Window\0\0");
 
-		bool modeOpt = displayMode == C64_Bitmap || displayMode == C64_Text || displayMode == C64_Sprites;
+//		bool modeOpt = displayMode == C64_Bitmap || displayMode == C64_Text || displayMode == C64_Sprites;
 
 		if (displayMode != C64_Current) {
 			ImGui::NextColumn();
@@ -317,8 +321,8 @@ void GfxView::Create8bppBitmap()
 
 	uint32_t *d = (uint32_t*)bitmap;
 	uint32_t w = cl * 8;
-	uint32_t cw = 8;
-	const uint32_t* pal = c64pal;// (const uint32_t*)c64Cols;
+//	uint32_t cw = 8;
+//	const uint32_t* pal = c64pal;// (const uint32_t*)c64Cols;
 
 	switch (displayMode) {
 		case Planar: CreatePlanarBitmap(d, linesHigh, w, c64pal); break;
@@ -461,7 +465,7 @@ void GfxView::CreateC64CurrentBitmap(uint32_t* d, const uint32_t* pal)
 		if (d015 & (1 << s)) {
 			int x = Get6502Byte(0xd000 + 2 * s) + (d010 & (1 << s) ? 256 : 0) - 24;
 			int y = Get6502Byte(0xd001 + 2 * s) - 50;
-			int l = 0, r = 0, sy = 0, sx = 0;
+			int /*l = 0, r = 0,*/ sy = 0, sx = 0;
 			if (d017 & (1 << s)) { sy = 1; }
 			if (d01d & (1 << s)) { sx = 1; }
 			if (x < sw && x>(-(24<<sx)) && y < sh && y >(-(21<<sy))) {
@@ -470,7 +474,7 @@ void GfxView::CreateC64CurrentBitmap(uint32_t* d, const uint32_t* pal)
 				uint16_t sprite = vic + index * 64;
 				for (int dy = y, by = y + (21<<sy); dy < by; ++dy) {
 					if (dy >= 0 && dy < sh) {
-						uint32_t* ds = d + dy * w;
+//						uint32_t* ds = d + dy * w;
 						uint16_t sr = sprite + 3 * ((dy - y) >> sy);
 						const uint8_t *row = Get6502Mem(sr);
 						for (int dx = x, rx = x + (24<<sx); dx < rx; ++dx) {

@@ -1,4 +1,6 @@
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
 #include <inttypes.h>
 #include "machine.h"
 #include "sym.h"
